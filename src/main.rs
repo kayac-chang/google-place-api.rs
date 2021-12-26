@@ -1,32 +1,35 @@
-use find_place::place::Client;
-use std::env;
+use clap::Parser;
+use find_place::place::{Client, Field, InputType};
 
 type Error = Box<dyn std::error::Error>;
 
+#[derive(Parser, Debug)]
+#[clap(about, author, version)]
+struct Args {
+    /// identifies the search target, such as a name, address, or phone number.
+    #[clap(long)]
+    input: String,
+
+    /// google api key
+    #[clap(long)]
+    token: String,
+
+    /// the type of input.
+    #[clap(long, arg_enum)]
+    input_type: InputType,
+
+    /// specify a list of place data types to return
+    #[clap(long, arg_enum, multiple_values = true)]
+    fields: Vec<Field>,
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let args = env::args().skip(1).collect::<Vec<_>>();
+    let config = Args::parse();
 
-    let token = args.get(0).expect("should passing first argument token");
-
-    let output = Client::new(token)
-        .find("Museum of Contemporary Art Australia", "textquery")
-        .add_fields(vec![
-            // place::Field::BusinessStatus,
-            // place::Field::FormattedAddress,
-            // place::Field::Geometry,
-            // place::Field::Icon,
-            // place::Field::IconMaskBaseUri,
-            // place::Field::IconBackgroundColor,
-            // place::Field::Name,
-            // place::Field::Photo,
-            // place::Field::PlaceId,
-            // place::Field::PlusCode,
-            // place::Field::OpeningHours,
-            // place::Field::PriceLevel,
-            // place::Field::Rating,
-            // place::Field::UserRatingsTotal,
-        ])
+    let output = Client::new(config.token)
+        .find(config.input, config.input_type.to_string())
+        .add_fields(config.fields)
         .send()
         .await?;
 

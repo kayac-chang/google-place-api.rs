@@ -1,6 +1,23 @@
+use clap::ArgEnum;
 use strum_macros::Display;
 
-#[derive(Debug, Display)]
+#[derive(Clone, ArgEnum, Display, Debug)]
+#[strum(serialize_all = "lowercase")]
+pub enum InputType {
+    TextQuery,
+    PhoneNumber,
+}
+
+#[derive(Debug)]
+pub struct Request<'a> {
+    pub url: &'a str,
+    pub token: &'a str,
+    pub input: String,
+    pub input_type: String,
+    pub fields: Vec<Field>,
+}
+
+#[derive(Clone, ArgEnum, Display, Debug)]
 #[strum(serialize_all = "snake_case")]
 pub enum Field {
     // AddressComponent,
@@ -29,15 +46,6 @@ pub enum Field {
     PriceLevel,
     Rating,
     UserRatingsTotal,
-}
-
-#[derive(Debug)]
-pub struct Request<'a> {
-    pub url: &'a str,
-    pub token: &'a str,
-    pub input: String,
-    pub input_type: String,
-    pub fields: Vec<Field>,
 }
 
 impl Request<'_> {

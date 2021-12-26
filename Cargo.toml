@@ -10,5 +10,6 @@ reqwest = { version = "*", features = ["json"] }
 tokio = { version = "*", features = ["full"] }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
-strum = "*"
-strum_macros = "*"
+strum = "0.23"
+strum_macros = "0.23"
+clap = { version = "3.0.0-rc.8", features = ["derive"] }

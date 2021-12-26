@@ -6,6 +6,7 @@ use request::Request;
 use response::Response;
 
 pub use request::Field;
+pub use request::InputType;
 
 type Error = Box<dyn std::error::Error>;
 
