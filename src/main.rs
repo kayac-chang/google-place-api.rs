@@ -1,5 +1,5 @@
 use clap::Parser;
-use find_place::place::{Client, Field, InputType};
+use google_place_api::place::{Client, Field, InputType};
 
 type Error = Box<dyn std::error::Error>;
 
