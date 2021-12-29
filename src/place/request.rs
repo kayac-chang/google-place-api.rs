@@ -1,3 +1,4 @@
+use crate::SearchParams;
 use clap::ArgEnum;
 use strum_macros::Display;
 
@@ -8,10 +9,9 @@ pub enum InputType {
     PhoneNumber,
 }
 
-#[derive(Debug)]
-pub struct Request<'a> {
-    pub url: &'a str,
-    pub token: &'a str,
+#[derive(Debug, Default)]
+pub struct Request {
+    pub token: String,
     pub input: String,
     pub input_type: String,
     pub fields: Vec<Field>,
@@ -48,7 +48,7 @@ pub enum Field {
     UserRatingsTotal,
 }
 
-impl Request<'_> {
+impl Request {
     pub fn add_field(&mut self, field: Field) -> &mut Self {
         self.fields.push(field);
 
@@ -61,5 +61,30 @@ impl Request<'_> {
         });
 
         self
+    }
+}
+
+impl SearchParams for Request {
+    fn get_params(&self) -> Vec<(String, String)> {
+        let mut params = vec![];
+
+        params.push(("key".to_owned(), self.token.to_owned()));
+
+        params.push(("input".to_owned(), self.input.clone()));
+
+        params.push(("inputtype".to_owned(), self.input_type.clone()));
+
+        if self.fields.len() > 0 {
+            let fields = self
+                .fields
+                .iter()
+                .map(|field| field.to_string())
+                .collect::<Vec<_>>()
+                .join(",");
+
+            params.push(("fields".to_owned(), fields));
+        }
+
+        params
     }
 }
