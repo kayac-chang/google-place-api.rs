@@ -6,11 +6,19 @@ google-place-api.rs
 
 Rust implementation for fetching [Google Places API][google-place-api] that returns information about places using HTTP requests. 
 
+## TODO
+
+- [x] Find Place
+- [x] Nearby Search 
+- [] Text Search
+- [] Place Details
+- [] Place Photo
+
 ## Usage
 
 ```toml
 [dependencies]
-google-place-api = "0.1.1"
+google-place-api = "0.2.0"
 ```
 
 [google-place-api]: (https://developers.google.com/maps/documentation/places/web-service/overview)
