@@ -1,7 +1,8 @@
 use std::process;
 
 use clap::{Parser, Subcommand};
-use google_place_api::place::{Field, InputType};
+use google_place_api::nearby;
+use google_place_api::place;
 use google_place_api::{Client, Send};
 
 type Error = Box<dyn std::error::Error>;
@@ -31,15 +32,15 @@ struct FindArgs {
 
     /// the type of input.
     #[clap(long, arg_enum)]
-    input_type: InputType,
+    input_type: place::InputType,
 
     /// specify a list of place data types to return
     #[clap(long, arg_enum, multiple_values = true)]
-    fields: Vec<Field>,
+    fields: Vec<place::Field>,
 }
 
 async fn find(config: FindArgs) -> Result<(), Error> {
-    let output = Client::new(config.token)
+    let output: place::Response = Client::new(config.token)
         .find(config.input, config.input_type.to_string())
         .add_fields(config.fields)
         .send()
@@ -106,7 +107,7 @@ async fn nearby(config: NearbyArgs) -> Result<(), Error> {
         (collect[0], collect[1])
     }
 
-    let output = match config.command {
+    let output: nearby::Response = match config.command {
         NearbyAction::Prominence(config) => {
             let (lat, lng) = parse_location(&config.location);
 

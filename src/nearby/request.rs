@@ -1,9 +1,11 @@
 use std::fmt::Display;
 
-use crate::{models::LatLng, SearchParams};
+use crate::{models::LatLng, SearchParams, SendUrl};
 
 #[derive(Debug, Default)]
 pub struct Request {
+    pub url: &'static str,
+
     pub token: String,
 
     /// The point around which to retrieve place information.
@@ -134,6 +136,12 @@ pub struct Prominence {
     pub radius: u32,
 }
 
+impl SendUrl for Prominence {
+    fn get_url(&self) -> &'static str {
+        return self.request.url;
+    }
+}
+
 impl SearchParams for Prominence {
     fn get_params(&self) -> Vec<(String, String)> {
         let mut params = self.request.get_params();
@@ -180,6 +188,12 @@ impl Distance {
         Distance {
             request: self.request,
         }
+    }
+}
+
+impl SendUrl for Distance {
+    fn get_url(&self) -> &'static str {
+        return self.request.url;
     }
 }
 

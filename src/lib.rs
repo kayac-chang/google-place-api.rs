@@ -6,7 +6,12 @@ pub mod place;
 pub use fetch::fetch;
 
 use async_trait::async_trait;
-use models::LatLng;
+use models::{Error, LatLng};
+use serde::de::DeserializeOwned;
+
+pub trait SendUrl {
+    fn get_url(&self) -> &'static str;
+}
 
 pub trait SearchParams {
     fn get_params(&self) -> Vec<(String, String)>;
@@ -15,6 +20,17 @@ pub trait SearchParams {
 #[async_trait]
 pub trait Send<Response, Error> {
     async fn send(&self) -> Result<Response, Error>;
+}
+
+#[async_trait]
+impl<T, R> Send<R, Error> for T
+where
+    T: SearchParams + SendUrl + std::marker::Sync,
+    R: DeserializeOwned,
+{
+    async fn send(&self) -> Result<R, Error> {
+        Ok(fetch(&self.get_url(), &self.get_params()).await?)
+    }
 }
 
 pub struct Client {
@@ -30,6 +46,7 @@ impl Client {
 
     pub fn find(&self, input: impl Into<String>, input_type: impl Into<String>) -> place::Request {
         place::Request {
+            url: "https://maps.googleapis.com/maps/api/place/findplacefromtext/json",
             token: self.token.clone(),
             input: input.into(),
             input_type: input_type.into(),
@@ -39,6 +56,7 @@ impl Client {
 
     pub fn nearby(&self, latitude: f64, longitude: f64) -> nearby::Request {
         nearby::Request {
+            url: "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
             token: self.token.clone(),
             location: LatLng {
                 lat: latitude,
