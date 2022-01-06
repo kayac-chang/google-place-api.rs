@@ -1,4 +1,4 @@
-use crate::SearchParams;
+use crate::{SearchParams, SendUrl};
 use clap::ArgEnum;
 use strum_macros::Display;
 
@@ -11,6 +11,7 @@ pub enum InputType {
 
 #[derive(Debug, Default)]
 pub struct Request {
+    pub url: &'static str,
     pub token: String,
     pub input: String,
     pub input_type: String,
@@ -61,6 +62,12 @@ impl Request {
         });
 
         self
+    }
+}
+
+impl SendUrl for Request {
+    fn get_url(&self) -> &'static str {
+        return self.url;
     }
 }
 
